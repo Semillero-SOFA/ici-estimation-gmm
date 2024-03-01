@@ -18,6 +18,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import polars as pl
 import tensorflow.keras as ker
+from pathlib import Path
 from joblib import dump, load
 from matplotlib.colors import LogNorm
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
@@ -34,13 +35,13 @@ import sofa
 # In[11]:
 
 ROOT = sofa.find_root(os.path.realpath(__file__))
-GLOBAL_RESULTS_DIR = f"{ROOT}/results"
-DATABASE_DIR = f"{ROOT}/database"
+ROOT_PARENT = f"{ROOT}/.."
+GLOBAL_RESULTS_DIR = f"{ROOT_PARENT}/results"
+DATABASE_DIR = f"{ROOT_PARENT}/database"
 
 # Create results directory if it doesn't exist
 RESULTS_DIR = f"{GLOBAL_RESULTS_DIR}/gmm_16GBd_regression"
-os.mkdir(RESULTS_DIR, exist_ok=True)
-
+Path(RESULTS_DIR).mkdir(parents=True, exist_ok=True)
 # Special function to read the known data structure
 
 
