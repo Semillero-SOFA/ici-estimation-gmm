@@ -34,10 +34,10 @@ import sofa
 
 # In[11]:
 
-ROOT = sofa.find_root(os.path.realpath(__file__))
-ROOT_PARENT = f"{ROOT}/.."
-GLOBAL_RESULTS_DIR = f"{ROOT_PARENT}/results"
-DATABASE_DIR = f"{ROOT_PARENT}/database"
+LOCAL_ROOT = sofa.find_root(Path(__file__))
+GLOBAL_ROOT = LOCAL_ROOT.parent
+DATABASE_DIR = f"{GLOBAL_ROOT}/database"
+GLOBAL_RESULTS_DIR = f"{GLOBAL_ROOT}/results"
 
 # Create results directory if it doesn't exist
 RESULTS_DIR = f"{GLOBAL_RESULTS_DIR}/gmm_16GBd_regression"
