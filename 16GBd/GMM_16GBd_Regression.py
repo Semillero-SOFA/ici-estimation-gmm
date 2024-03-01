@@ -34,7 +34,7 @@ import sofa
 
 # In[11]:
 
-LOCAL_ROOT = sofa.find_root(Path(__file__))
+LOCAL_ROOT = sofa.find_root(Path("./"))
 GLOBAL_ROOT = LOCAL_ROOT.parent
 DATABASE_DIR = f"{GLOBAL_ROOT}/database"
 GLOBAL_RESULTS_DIR = f"{GLOBAL_ROOT}/results"
