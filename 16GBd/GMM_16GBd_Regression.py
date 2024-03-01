@@ -720,8 +720,8 @@ gmm_neurons_avg_results = [
     for neurons in max_neurons
 ]
 neurons_filename = "gmm_neurons_avg_results"
-sofa.save_json(gmm_neurons_avg_results, f"{
-               RESULTS_DIR}/{neurons_filename}.json")
+sofa.save_json(gmm_neurons_avg_results,
+               f"{RESULTS_DIR}/{neurons_filename}.json")
 
 x = list(map(int, max_neurons))
 plot_results(x, gmm_neurons_avg_results, "gmm_neurons_avg_results",
@@ -740,7 +740,8 @@ gmm_layers_avg_results = [
     for layers in range(1, 4)
 ]
 layers_filename = "gmm_layers_avg_results"
-sofa.save_json(gmm_layers_avg_results, f"{RESULTS_DIR}/{layers_filename}.json")
+sofa.save_json(gmm_layers_avg_results,
+               f"{RESULTS_DIR}/{layers_filename}.json")
 
 x = range(1, 4)
 plot_results(x, gmm_layers_avg_results, "gmm_layers_avg_results",
@@ -757,7 +758,8 @@ gmm_osnr_avg_results = [
     for osnr in ["osnr", "wo_osnr"]
 ]
 osnr_filename = "gmm_osnr_avg_results"
-sofa.save_json(gmm_osnr_avg_results, f"{RESULTS_DIR}/{osnr_filename}.json")
+sofa.save_json(gmm_osnr_avg_results,
+               f"{RESULTS_DIR}/{osnr_filename}.json")
 
 # ## Sort models by score
 
