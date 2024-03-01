@@ -514,8 +514,7 @@ def plot_histograms(
 
         plt.suptitle(f"Plots for {osnr} OSNR and {spacing} of spacing")
 
-        fig_name = f"{
-            RESULTS_DIR}/plot_feat_{osnr.replace(".", "p")}_{spacing.replace(".", "p")}.svg"
+        fig_name = f"{RESULTS_DIR}/plot_features_{osnr.replace(".", "p")}_{spacing.replace(".", "p")}.svg"
         plt.savefig(fig_name)
 
     bins = 128
