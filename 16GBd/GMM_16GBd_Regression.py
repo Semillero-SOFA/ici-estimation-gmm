@@ -20,7 +20,7 @@ import gmm_utils
 # Globals
 LOCAL_ROOT = sofa.find_root()
 GLOBAL_ROOT = LOCAL_ROOT.parent
-DATABASE_DIR = f"{GLOBAL_ROOT}/database"
+DATABASE_DIR = f"{GLOBAL_ROOT}/databases"
 GLOBAL_RESULTS_DIR = f"{GLOBAL_ROOT}/results"
 
 # Create results directory if it doesn't exist
