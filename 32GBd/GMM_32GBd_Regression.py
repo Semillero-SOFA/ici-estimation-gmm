@@ -19,7 +19,7 @@ import sofa
 import gmm_utils
 
 # Globals
-LOCAL_ROOT = sofa.find_root(Path("./"))
+LOCAL_ROOT = sofa.find_root()
 GLOBAL_ROOT = LOCAL_ROOT.parent
 DATABASE_DIR = f"{GLOBAL_ROOT}/database"
 GLOBAL_RESULTS_DIR = f"{GLOBAL_ROOT}/results"
