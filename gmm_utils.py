@@ -7,7 +7,7 @@ import polars as pl
 import tensorflow.keras as ker
 from matplotlib.colors import LogNorm
 from sklearn.metrics import (
-    mean_absolute_error, root_mean_squared_error, r2_score
+    mean_absolute_error, mean_squared_error, r2_score
 )
 from sklearn.mixture import GaussianMixture
 from sklearn.model_selection import KFold
@@ -144,14 +144,17 @@ def estimation_crossvalidation(
         )
 
         # RMSE
-        rmse_score_train = root_mean_squared_error(
-            *train_data_train["ICI"], *train_data_train["Predicted ICI"]
+        rmse_score_train = mean_squared_error(
+            *train_data_train["ICI"], *train_data_train["Predicted ICI"],
+            squared=False
         )
-        rmse_score_test = root_mean_squared_error(
-            *train_data_test["ICI"], *train_data_test["Predicted ICI"]
+        rmse_score_test = mean_squared_error(
+            *train_data_test["ICI"], *train_data_test["Predicted ICI"],
+            squared=False
         )
-        rmse_score_prod = root_mean_squared_error(
-            *train_data_prod["ICI"], *train_data_prod["Predicted ICI"]
+        rmse_score_prod = mean_squared_error(
+            *train_data_prod["ICI"], *train_data_prod["Predicted ICI"],
+            squared=False
         )
 
         # Append to lists
@@ -301,6 +304,11 @@ def get_avg_score(results, target_value, target="neurons", metric="mae", score="
                 if target == "osnr" and osnr != target_value:
                     continue
                 act_fn_name = "".join([s[0] for s in activations])
+                print(act_fn_name)
+                print(neurons)
+                print(osnr)
+                print(metric)
+                print(score)
                 score.append(
                     np.mean(
                         [*results[act_fn_name][neurons]

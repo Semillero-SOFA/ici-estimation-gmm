@@ -71,7 +71,7 @@ models_tuple = (
 
 
 def plot_histograms(
-    data, histograms_gmm, spacing: None | str = None, osnr: None | str = None
+    data, histograms_gmm, spacing: str, osnr: str
 ):
     def plot(data, histograms_gmm, osnr, spacing):
         # Extract data
@@ -137,7 +137,7 @@ def plot_histograms(
 
         file_osnr, file_spacing = osnr.replace(
             ".", "p"), spacing.replace(".", "p")
-        fig_name = f"{RESULTS_DIR}/plot_feats_{file_osnr}_{file_spacing}.svg"
+        fig_name = f"{RESULTS_DIR}/plot_feats_{file_spacing}_{file_osnr}.svg"
         plt.savefig(fig_name)
 
     bins = 128
