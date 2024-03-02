@@ -139,6 +139,7 @@ def plot_histograms(
             ".", "p"), spacing.replace(".", "p")
         fig_name = f"{RESULTS_DIR}/plot_feats_{file_spacing}_{file_osnr}.svg"
         plt.savefig(fig_name)
+        plt.close()
 
     bins = 128
     limits = [-5, 5]
