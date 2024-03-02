@@ -71,7 +71,7 @@ models_tuple = (
 
 
 def plot_histograms(
-    data, histograms_gmm, spacing: str, osnr: str
+    data, histograms_gmm, spacing: str | None = None, osnr: str | None = None
 ):
     def plot(data, histograms_gmm, osnr, spacing):
         # Extract data
@@ -147,10 +147,8 @@ def plot_histograms(
         plot(data, histograms_gmm, osnr, spacing)
 
     elif spacing is None and osnr is None:
-        spacings = [f"{x}GHz" for x in [
-            "15", "15.5", "16", "16.5", "17", "17.6", "18"]]
-        for spacing in spacings:
-            for osnr in data[f"{spacing}GHz"]:
+        for spacing in data.keys():
+            for osnr in data[spacing]:
                 plot(data, histograms_gmm, osnr, spacing)
     else:
         raise ValueError
@@ -179,4 +177,5 @@ def plot_menu(data):
     plot_histograms(data, models_gmm, spacing, osnr)
 
 
-plot_menu(data)
+# plot_menu(data)
+plot_histograms(data, models_gmm)
