@@ -107,7 +107,7 @@ def get_histograms():
 
                 # Calculate 3D histogram
                 hist, x_mesh, y_mesh = gmm_utils.calculate_3d_histogram(
-                    x_ch, bins, limits, spacing, snr
+                    x_ch, bins, limits
                 )
 
                 # Save 3D histogram
