@@ -304,10 +304,6 @@ def get_avg_score(results, target_value, target="neurons", metric="mae", score="
                 if target == "osnr" and osnr != target_value:
                     continue
                 act_fn_name = "".join([s[0] for s in activations])
-                print(act_fn_name)
-                print(neurons)
-                print(osnr)
-                print(metric)
                 score_list.append(
                     np.mean(
                         [*results[act_fn_name][neurons]
