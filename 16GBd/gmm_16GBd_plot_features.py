@@ -179,3 +179,5 @@ def plot_menu(data):
 
 # plot_menu(data)
 plot_histograms(data, models_gmm)
+
+print("GMM plots generated succesfully")

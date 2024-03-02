@@ -123,12 +123,14 @@ X_tx = np.array(pl.read_csv(file_tx))
 X_txs = gmm_utils.split(X_tx, 12)
 
 # Read received data
+print("Reading data...")
 data = read_data(folder_rx)
 
 # Try to load histograms
 file_models_hist = f"{RESULTS_DIR}/models16_hist.pkl"
 file_models_gmm = f"{RESULTS_DIR}/models16_gmm.pkl"
 
+print("Trying to load features...")
 models_hist = sofa.joblib_load(file_models_hist)
 models_gmm = sofa.joblib_load(file_models_gmm)
 models_tuple = (
@@ -141,3 +143,5 @@ models_tuple = gmm_utils.calc_once("models_tuple", get_histograms, {})
 models_hist, models_gmm = models_tuple
 sofa.joblib_save(models_hist, file_models_hist)
 sofa.joblib_save(models_gmm, file_models_gmm)
+
+print("Features calculated succesfully")

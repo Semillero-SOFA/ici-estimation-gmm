@@ -94,3 +94,5 @@ better_models_df.head(25).write_json(
     f"{RESULTS_DIR}/gmm_16GBd_better_models.json")
 better_models_df.tail(25).write_json(
     f"{RESULTS_DIR}/gmm_16GBd_worst_models.json")
+
+print("Results saved succesfully")
