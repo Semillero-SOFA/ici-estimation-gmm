@@ -293,7 +293,7 @@ def plot_results(x_values, scores, path, xlabel, log=False, intx=False):
 
 
 def get_avg_score(results, target_value, target="neurons", metric="mae", score="test"):
-    score = []
+    score_list = []
     for activations in HIDDEN_LAYERS_LIST:
         if target == "layers" and len(activations) != target_value:
             continue
@@ -308,14 +308,13 @@ def get_avg_score(results, target_value, target="neurons", metric="mae", score="
                 print(neurons)
                 print(osnr)
                 print(metric)
-                print(score)
-                score.append(
+                score_list.append(
                     np.mean(
                         [*results[act_fn_name][neurons]
                             [osnr][metric][score].values()]
                     )
                 )
-    return score
+    return score_list
 
 
 def get_better_models(results, metric="mae", score="test"):
