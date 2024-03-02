@@ -170,7 +170,8 @@ def plot_histograms(
 
         # Calculate 3D histogram
         hist, x_mesh, y_mesh = gmm_utils.calculate_3d_histogram(
-            X_ch, bins, limits, spacing, osnr)
+            X_ch, bins, limits
+        )
 
         # Plot 3D histogram
         ax = plt.subplot(2, 2, 2, projection="3d")
