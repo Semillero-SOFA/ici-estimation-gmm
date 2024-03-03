@@ -75,7 +75,7 @@ INTERVAL_LIST = {"2": [17.6],
                  "5": [15.5, 16.0, 16.5, 17.6]}
 df_class = {}
 for classes_n, interval in INTERVAL_LIST.items():
-    df_class[classes_n] = gmm_utils.classificator(df, interval, "column_82")
+    df_class[classes_n] = gmm_utils.classificator(df, interval, "column_81")
 
 # Shuffle the dataframe
 df_class_shuffled = {}
