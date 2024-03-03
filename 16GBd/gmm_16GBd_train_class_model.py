@@ -76,14 +76,13 @@ INTERVAL_LIST = {"2": [17.6],
 df_class = {}
 for classes_n, interval in INTERVAL_LIST.items():
     df_class[classes_n] = gmm_utils.classificator(df, interval, "col81")
-df_class = pl.from_dict(df_class)
 
 # Shuffle the dataframe
 df_class_shuffled = {}
 for classes_n, interval in INTERVAL_LIST.items():
-    df_class_shuffled[classes_n] = df_class.sample(n=len(df),
-                                                   shuffle=True,
-                                                   seed=1036681523)
+    df_class_shuffled[classes_n] = df_class[classes_n].sample(n=len(df),
+                                                              shuffle=True,
+                                                              seed=1036681523)
 
 # Hyperparameters evaluation
 # The following hyperparameters are going to be combined and evaluated:
