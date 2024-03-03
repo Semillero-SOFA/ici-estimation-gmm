@@ -89,7 +89,7 @@ sofa.save_json(gmm_osnr_avg_results,
                osnr_json_filename)
 
 # Sort models by score
-better_models_df = gmm_utils.get_better_models(
+better_models_df = gmm_utils.get_better_reg_models(
     histograms_reg_results, metric="mae", score="test"
 )
 better_models_df.write_json(
