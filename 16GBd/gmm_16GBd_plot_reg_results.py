@@ -26,7 +26,7 @@ histograms_reg_results = sofa.load_hdf5(results_file)
 # Neurons
 gmm_neurons_avg_results = [
     np.mean(
-        gmm_utils.get_avg_score(
+        gmm_utils.get_avg_reg_score(
             histograms_reg_results,
             neurons,
             target="neurons",
@@ -48,7 +48,7 @@ gmm_utils.plot_results(gmm_utils.MAX_NEURONS_LIST,
 # Layers
 gmm_layers_avg_results = [
     np.mean(
-        gmm_utils.get_avg_score(
+        gmm_utils.get_avg_reg_score(
             histograms_reg_results,
             layers,
             target="layers",
@@ -70,7 +70,7 @@ gmm_utils.plot_results(gmm_utils.LAYERS_NUMBER_LIST,
 # OSNR
 gmm_osnr_avg_results = [
     np.mean(
-        gmm_utils.get_avg_score(
+        gmm_utils.get_avg_reg_score(
             histograms_reg_results,
             osnr,
             target="osnr",
