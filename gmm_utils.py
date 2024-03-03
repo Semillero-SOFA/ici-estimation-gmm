@@ -7,7 +7,13 @@ import polars as pl
 import tensorflow.keras as ker
 from matplotlib.colors import LogNorm
 from sklearn.metrics import (
-    mean_absolute_error, mean_squared_error, r2_score
+    ConfusionMatrixDisplay,
+    mean_absolute_error,
+    mean_squared_error,
+    r2_score,
+    accuracy_score,
+    f1_score,
+    multilabel_confusion_matrix,
 )
 from sklearn.mixture import GaussianMixture
 from sklearn.model_selection import KFold
@@ -18,13 +24,12 @@ OSNR_LIST = ["osnr", "wo_osnr"]
 MAX_NEURONS_LIST = [str(2**n) for n in range(3, 11)]
 FUNCTIONS_LIST = ["relu", "tanh", "sigmoid"]
 LAYERS_NUMBER_LIST = [1, 2, 3]
-
 COMBINATIONS_LIST = [
     [list(subset) for subset in product(FUNCTIONS_LIST, repeat=n)] for n in LAYERS_NUMBER_LIST
 ]
-
 HIDDEN_LAYERS_LIST = [
     item for sublist in COMBINATIONS_LIST for item in sublist]
+N_CLASSES_LIST = range(2, 6)
 
 
 def split(a, n):
@@ -61,16 +66,16 @@ def estimation_model(
 
 
 def estimation_crossvalidation(
-    X, y, X_prod, y_prod, n_splits, layer_props, loss_fn, callbacks
+    X, y, n_splits, layer_props, loss_fn, callbacks
 ):
     """Crossvalidation of an estimation network."""
     # Scores dict
     scores = {}
     scores["model"] = []
     scores["loss"] = []
-    scores["mae"] = {"train": [], "test": [], "prod": []}
-    scores["r2"] = {"train": [], "test": [], "prod": []}
-    scores["rmse"] = {"train": [], "test": [], "prod": []}
+    scores["mae"] = {"train": [], "test": []}
+    scores["r2"] = {"train": [], "test": []}
+    scores["rmse"] = {"train": [], "test": []}
 
     # K-fold crossvalidation
     kf = KFold(n_splits=n_splits, shuffle=True)
@@ -83,7 +88,6 @@ def estimation_crossvalidation(
         sc = StandardScaler()
         X_train = sc.fit_transform(X_train)
         X_test_kf = sc.transform(X_test)
-        X_prod_kf = sc.transform(X_prod)
 
         model = estimation_model(layer_props, loss_fn, X_train.shape[1])
 
@@ -107,8 +111,6 @@ def estimation_crossvalidation(
         predictions_train = model.predict(X_train, verbose=0)
         # Predict using test values
         predictions_test = model.predict(X_test_kf, verbose=0)
-        # Predict using production values
-        predictions_prod = model.predict(X_prod_kf, verbose=0)
 
         # Dataframe for better visualization
         train_data_train = pl.DataFrame(
@@ -116,9 +118,6 @@ def estimation_crossvalidation(
         )
         train_data_test = pl.DataFrame(
             {"ICI": [y_test], "Predicted ICI": [predictions_test]}
-        )
-        train_data_prod = pl.DataFrame(
-            {"ICI": [y_prod], "Predicted ICI": [predictions_prod]}
         )
 
         # MAE
@@ -128,9 +127,6 @@ def estimation_crossvalidation(
         mae_score_test = mean_absolute_error(
             *train_data_test["ICI"], *train_data_test["Predicted ICI"]
         )
-        mae_score_prod = mean_absolute_error(
-            *train_data_prod["ICI"], *train_data_prod["Predicted ICI"]
-        )
 
         # R²
         r2_score_train = r2_score(
@@ -138,9 +134,6 @@ def estimation_crossvalidation(
         )
         r2_score_test = r2_score(
             *train_data_test["ICI"], *train_data_test["Predicted ICI"]
-        )
-        r2_score_prod = r2_score(
-            *train_data_prod["ICI"], *train_data_prod["Predicted ICI"]
         )
 
         # RMSE
@@ -152,32 +145,24 @@ def estimation_crossvalidation(
             *train_data_test["ICI"], *train_data_test["Predicted ICI"],
             squared=False
         )
-        rmse_score_prod = mean_squared_error(
-            *train_data_prod["ICI"], *train_data_prod["Predicted ICI"],
-            squared=False
-        )
 
         # Append to lists
         scores["model"].append(model)
         scores["loss"].append(loss)
         scores["mae"]["train"].append(mae_score_train)
         scores["mae"]["test"].append(mae_score_test)
-        scores["mae"]["prod"].append(mae_score_prod)
         scores["r2"]["train"].append(r2_score_train)
         scores["r2"]["test"].append(r2_score_test)
-        scores["r2"]["prod"].append(r2_score_prod)
         scores["rmse"]["train"].append(rmse_score_train)
         scores["rmse"]["test"].append(rmse_score_test)
-        scores["rmse"]["prod"].append(rmse_score_prod)
 
     return scores
 
 
 def test_estimation_model(
     data,
-    data_prod,
     n_splits,
-    MAX_NEURONS_LIST,
+    max_neurons,
     activations,
     use_osnr=True,
     loss_fn="mean_absolute_error",
@@ -189,14 +174,12 @@ def test_estimation_model(
     # Split variables
     # Variables
     X = np.array(data[:, 0:var_n])
-    X_prod = np.array(data_prod[:, 0:var_n])
     # Tags
     y = np.array(data[:, -1])
-    y_prod = np.array(data_prod[:, -1])
 
     # Layer properties
     layer_props = [
-        {"units": MAX_NEURONS_LIST // (2**i), "activation": activation}
+        {"units": max_neurons // (2**i), "activation": activation}
         for i, activation in enumerate(activations)
     ]
     print(f"{layer_props}{' + OSNR' if use_osnr else ''}")
@@ -207,7 +190,186 @@ def test_estimation_model(
     ]
 
     return estimation_crossvalidation(
-        X, y, X_prod, y_prod, n_splits, layer_props, loss_fn, callbacks
+        X, y, n_splits, layer_props, loss_fn, callbacks
+    )
+
+
+def classificator(df, interval_lst, column_name):
+    """Transforms a dataframe's column into classes"""
+    array = df[column_name].to_numpy()
+    new_column = pl.Series(np.digitize(array, interval_lst))
+
+    df_classfull = df.clone()
+    df_classfull = df_classfull.with_columns(new_column.alias(column_name))
+
+    return df_classfull
+
+
+def classifier_model(
+    layers_props_lst: list, classes_n: int,
+    loss_fn: ker.losses.Loss, input_dim: int
+) -> ker.models.Sequential:
+    """Compile a sequential model for classification purposes."""
+    model = ker.Sequential()
+    # Hidden layers
+    for i, layer_props in enumerate(layers_props_lst):
+        if i == 0:
+            model.add(ker.layers.Dense(input_dim=input_dim, **layer_props))
+        else:
+            model.add(ker.layers.Dense(**layer_props))
+    # Classifier
+    model.add(ker.layers.Dense(units=classes_n, activation="softmax"))
+
+    model.compile(loss=loss_fn, optimizer="adam")
+
+    return model
+
+
+def classification_crossvalidation(
+    X, y, n_splits, layer_props, classes_n, loss_fn, callbacks
+):
+    """Crossvalidation of a classification network."""
+    # Scores dict
+    scores = {}
+    scores["model"] = []
+    scores["loss"] = []
+    scores["acc"] = {"train": [], "test": []}
+    scores["f1"] = {"train": [], "test": []}
+    scores["cm"] = {"train": [], "test": []}
+
+    # K-fold crossvalidation
+    kf = KFold(n_splits=n_splits, shuffle=True)
+
+    for train_index, test_index in kf.split(X, y):
+        X_train, X_test = X[train_index], X[test_index]
+        y_train, y_test = y[train_index], y[test_index]
+
+        # Input variables standarizer
+        sc = StandardScaler()
+        X_train = sc.fit_transform(X_train)
+        X_test_kf = sc.transform(X_test)
+
+        model = classifier_model(
+            layer_props, classes_n,
+            loss_fn, X_train.shape[1]
+        )
+
+        # Save test scalar loss
+        if callbacks:
+            loss = model.fit(
+                X_train,
+                y_train,
+                epochs=5000,
+                batch_size=64,
+                callbacks=callbacks,
+                verbose=0,
+            )
+        else:
+            loss = model.fit(X_train, y_train, epochs=5000,
+                             batch_size=64, verbose=0)
+        print(f"Needed iterations: {len(loss.history['loss'])}")
+        loss = loss.history["loss"]
+
+        # Predict using train, test and prod values
+        fuzzy_predictions_train = model.predict(X_train)
+        fuzzy_predictions_test = model.predict(X_test_kf)
+
+        # Assign class based on higher probability in membership vector
+        predictions_train = np.array(
+            [
+                np.argmax(fuzzy_prediction)
+                for fuzzy_prediction in fuzzy_predictions_train
+            ]
+        )
+        predictions_test = np.array(
+            [
+                np.argmax(fuzzy_prediction)
+                for fuzzy_prediction in fuzzy_predictions_test
+            ]
+        )
+
+        # Dataframe for better visualization
+        train_data_train = pl.DataFrame(
+            {"ICI": [y_train], "Predicted ICI": [predictions_train]}
+        )
+        train_data_test = pl.DataFrame(
+            {"ICI": [y_test], "Predicted ICI": [predictions_test]}
+        )
+
+        # Accuracy
+        acc_score_train = accuracy_score(
+            *train_data_train["ICI"], *train_data_train["Predicted ICI"]
+        )
+        acc_score_test = accuracy_score(
+            *train_data_test["ICI"], *train_data_test["Predicted ICI"]
+        )
+
+        # F1
+        f1_score_train = f1_score(
+            *train_data_train["ICI"],
+            *train_data_train["Predicted ICI"],
+            average="micro",
+        )
+        f1_score_test = f1_score(
+            *train_data_test["ICI"],
+            *train_data_test["Predicted ICI"],
+            average="micro"
+        )
+
+        # Confusion matrix
+        cm_score_train = multilabel_confusion_matrix(
+            train_data_train["ICI"], train_data_train["Predicted ICI"]
+        ).tolist()
+        cm_score_test = multilabel_confusion_matrix(
+            train_data_test["ICI"], train_data_test["Predicted ICI"]
+        ).tolist()
+
+        # Append to lists
+        scores["model"].append(model)
+        scores["loss"].append(loss)
+        scores["acc"]["train"].append(acc_score_train)
+        scores["acc"]["test"].append(acc_score_test)
+        scores["f1"]["train"].append(f1_score_train)
+        scores["f1"]["test"].append(f1_score_test)
+        scores["cm"]["train"].append(cm_score_train)
+        scores["cm"]["test"].append(cm_score_test)
+
+    return scores
+
+
+def test_classification_model(
+    data,
+    n_splits,
+    max_neurons,
+    activations,
+    classes_n,
+    use_osnr=True,
+    loss_fn="sparse_categorical_crossentropy",
+):
+    """Test a spectral overlapping classification model with given parameters."""
+    n_feat = data.shape[1]
+    var_n = n_feat - 1 if use_osnr else n_feat - 2
+
+    # Split variables
+    # Variables
+    X = np.array(data[:, 0:var_n])
+    # Tags
+    y = np.array(data[:, -1])
+
+    # Layer properties
+    layer_props = [
+        {"units": max_neurons // (2**i), "activation": activation}
+        for i, activation in enumerate(activations)
+    ]
+    print(f"{layer_props}{' + OSNR' if use_osnr else ''}")
+    callbacks = [
+        EarlyStopping(
+            monitor="loss", patience=30, mode="min", restore_best_weights=True
+        )
+    ]
+
+    return classification_crossvalidation(
+        X, y, n_splits, layer_props, classes_n, loss_fn, callbacks
     )
 
 
@@ -271,19 +433,22 @@ def calculate_3d_histogram(X, bins, limits):
 
 def plot_3d_histogram(x_mesh, y_mesh, hist, ax):
     ax.plot_surface(
-        x_mesh, y_mesh, hist.T, cmap="seismic", rstride=1, cstride=1, edgecolor="none"
+        x_mesh, y_mesh, hist.T, cmap="seismic",
+        rstride=1, cstride=1, edgecolor="none"
     )
     ax.set_title("3D Histogram")
     ax.set_xlabel("I")
     ax.set_ylabel("Q")
 
 
-def plot_results(x_values, scores, path, xlabel, log=False, intx=False):
+def plot_results(
+        x_values, scores, path, xlabel, ylabel,
+        log=False, intx=False):
     plt.figure(figsize=(8, 6), layout="constrained")
     plt.scatter(x_values, scores)
     plt.plot(x_values, scores)
     plt.xlabel(xlabel)
-    plt.ylabel("MAE")
+    plt.ylabel(ylabel)
     if log:
         plt.xscale("log", base=2)
     if intx:
@@ -292,7 +457,24 @@ def plot_results(x_values, scores, path, xlabel, log=False, intx=False):
     plt.savefig(path)
 
 
-def get_avg_score(results, target_value, target="neurons", metric="mae", score="test"):
+def plot_cm(scores, interval_lst):
+    CM = np.array(scores.get("cm").get("test"))
+    for n, interval in enumerate(interval_lst):
+        result = np.zeros(CM[0][0].shape)
+        for cm in CM:
+            result = np.add(result, cm[n])
+        result /= np.sum(result)
+        disp = ConfusionMatrixDisplay(confusion_matrix=result, display_labels=[
+                                      "Positive", "Negative"])
+        disp.plot(colorbar=False)
+        lower_limit, upper_limit = interval
+        plt.title(f"Confusion matrix for class from {
+                  lower_limit} GHz up to {upper_limit} GHz")
+        plt.show()
+
+
+def get_avg_reg_score(results, target_value, target="neurons",
+                      metric="mae", score="test"):
     score_list = []
     for activations in HIDDEN_LAYERS_LIST:
         if target == "layers" and len(activations) != target_value:
@@ -313,7 +495,30 @@ def get_avg_score(results, target_value, target="neurons", metric="mae", score="
     return score_list
 
 
-def get_better_models(results, metric="mae", score="test"):
+def get_avg_class_score(results, target_value, target="neurons",
+                        metric="acc", score="test"):
+    score_list = []
+    for activations in HIDDEN_LAYERS_LIST:
+        if target == "layers" and len(activations) != target_value:
+            continue
+        for neurons in MAX_NEURONS_LIST:
+            if target == "neurons" and neurons != target_value:
+                continue
+            for osnr in OSNR_LIST:
+                if target == "osnr" and osnr != target_value:
+                    continue
+                for n_classes in N_CLASSES_LIST:
+                    if target == "n_classes" and n_classes != target_value:
+                        continue
+                    act_fn_name = "".join([s[0] for s in activations])
+                    score_list.append(
+                        np.mean(
+                            [*results[act_fn_name][neurons]
+                                [osnr][metric][score].values()]
+                        )
+                    )
+    return score_list
+def get_better_reg_models(results, metric="mae", score="test"):
     scores = []
     for activations in HIDDEN_LAYERS_LIST:
         for neurons in MAX_NEURONS_LIST:

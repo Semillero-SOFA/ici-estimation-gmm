@@ -19,7 +19,7 @@ DATABASE_DIR = f"{GLOBAL_ROOT}/databases"
 GLOBAL_RESULTS_DIR = f"{GLOBAL_ROOT}/results"
 
 # Create results directory if it doesn't exist
-RESULTS_DIR = f"{GLOBAL_RESULTS_DIR}/gmm_16GBd_regression"
+RESULTS_DIR = f"{GLOBAL_RESULTS_DIR}/gmm_16GBd_classification"
 Path(RESULTS_DIR).mkdir(parents=True, exist_ok=True)
 
 # Try to load histograms
@@ -68,11 +68,21 @@ for spacing, osnr_dict in models_gmm.items():
 # Convert the list of dictionaries into a DataFrame
 df = pl.DataFrame(data_list)
 
-# Print the DataFrame
-df.write_json(f"{RESULTS_DIR}/gmm16_features.json")
+# Declare spacing intervals
+INTERVAL_LIST = {"2": [17.6],
+                 "3": [16.5, 17.6],
+                 "4": [16.0, 16.5, 17.6],
+                 "5": [15.5, 16.0, 16.5, 17.6]}
+df_class = {}
+for classes_n, interval in INTERVAL_LIST.items():
+    df_class[classes_n] = gmm_utils.classificator(df, interval, "column_82")
 
 # Shuffle the dataframe
-df_shuffled = df.sample(n=len(df), shuffle=True, seed=1036681523)
+df_class_shuffled = {}
+for classes_n, interval in INTERVAL_LIST.items():
+    df_class_shuffled[classes_n] = df_class.sample(n=len(df),
+                                                   shuffle=True,
+                                                   seed=1036681523)
 
 # Hyperparameters evaluation
 # The following hyperparameters are going to be combined and evaluated:
@@ -88,39 +98,40 @@ df_shuffled = df.sample(n=len(df), shuffle=True, seed=1036681523)
 # Where `xyz` will be each initial of the activation functions in the model (r for ReLu, t for tanh and s for sigmoid), `n_neurons` will be the maximum number of neurons in the model (corresponding to the first layer), `osnr` will be a string telling if that model used OSNR as input or not (`"osnr"` or `wo_osnr`).
 # Finally the results will store the loss history, the serialized model in JSON format in a string and MAE, RMSE and R² values for training, test and production data.
 # Training
-results_file = f"{RESULTS_DIR}/gmm16_reg_results.h5"
+results_file = f"{RESULTS_DIR}/gmm16_class_results.h5"
 try:
-    histograms_reg_results = sofa.load_hdf5(results_file)
+    histograms_class_results = sofa.load_hdf5(results_file)
 except:
     print("Error loading from file, creating a new dictionary")
-    histograms_reg_results = defaultdict(
+    histograms_class_results = defaultdict(
         defaultdict(defaultdict(defaultdict().copy).copy).copy
     )
 
 for activations in gmm_utils.HIDDEN_LAYERS_LIST:
     for neurons in gmm_utils.MAX_NEURONS_LIST:
         for osnr in gmm_utils.OSNR_LIST:
-            args = {
-                "data": df_shuffled,
-                "n_splits": 5,
-                "max_neurons": int(neurons),
-                "activations": activations,
-                "use_osnr": True if osnr == "osnr" else False,
-            }
-            act_fn_name = "".join([s[0] for s in activations])
-            if histograms_reg_results[act_fn_name][neurons][osnr] == defaultdict():
-                # Get results
-                results = gmm_utils.test_estimation_model(**args)
-                # Serialize model
-                results["model"] = [
-                    utils.serialize_keras_object(model) for model in results["model"]
-                ]
+            for n in classes_n:
+                args = {
+                    "data": df_class_shuffled[n],
+                    "n_splits": 5,
+                    "max_neurons": int(neurons),
+                    "activations": activations,
+                    "use_osnr": True if osnr == "osnr" else False,
+                }
+                act_fn_name = "".join([s[0] for s in activations])
+                if histograms_class_results[act_fn_name][neurons][osnr] == defaultdict():
+                    # Get results
+                    results = gmm_utils.test_classification_model(**args)
+                    # Serialize model
+                    results["model"] = [
+                        utils.serialize_keras_object(model) for model in results["model"]
+                    ]
 
-                # Save serialized model for serialization
-                histograms_reg_results[act_fn_name][neurons][osnr] = results
+                    # Save serialized model for serialization
+                    histograms_class_results[act_fn_name][neurons][osnr] = results
 
-                # Save results with serialized model
-                print("Saving results...")
-                sofa.save_hdf5(histograms_reg_results, results_file)
-                print("Results saved!")
+                    # Save results with serialized model
+                    print("Saving results...")
+                    sofa.save_hdf5(histograms_class_results, results_file)
+                    print("Results saved!")
 print("Training complete")
