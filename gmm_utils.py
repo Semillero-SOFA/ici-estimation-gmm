@@ -318,10 +318,10 @@ def classification_crossvalidation(
 
         # Confusion matrix
         cm_score_train = multilabel_confusion_matrix(
-            train_data_train["ICI"], train_data_train["Predicted ICI"]
+            *train_data_train["ICI"], *train_data_train["Predicted ICI"]
         ).tolist()
         cm_score_test = multilabel_confusion_matrix(
-            train_data_test["ICI"], train_data_test["Predicted ICI"]
+            *train_data_test["ICI"], *train_data_test["Predicted ICI"]
         ).tolist()
 
         # Append to lists
