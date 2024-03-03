@@ -114,6 +114,7 @@ for activations in gmm_utils.HIDDEN_LAYERS_LIST:
             for n in classes_n:
                 args = {
                     "data": df_class_shuffled[n],
+                    "classes_n": n,
                     "n_splits": 5,
                     "max_neurons": int(neurons),
                     "activations": activations,
