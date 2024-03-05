@@ -131,11 +131,12 @@ def plot_histograms(data, histograms_gmm, distance, power, spacing, osnr, song, 
         ax.set_xlabel("Q")
         ax.grid(True)
 
-        plt.suptitle(f"Plots for constellation at {distance} with {power} launch power, {
-                     spacing} spectral spacing, {osnr} OSNR, Song {song[-1]}, {orth} component.")
+        plt.suptitle(f"Plots for constellation at {distance} with {power} launch power, {spacing} spectral spacing, {osnr} OSNR, Song {song[-1]}, {orth} component.")
 
+        file_spacing = spacing.replace(".", "p")
+        file_osnr = osnr.replace(".", "p")
         fig_name = f"{
-            RESULTS_DIR}/plot_features_{osnr.replace('.', 'p')}_{spacing.replace('.', 'p')}.svg"
+            RESULTS_DIR}/plot_features_{distance}_{power}_{spacing}_{osnr}_{song}_{orth}.svg"
         plt.savefig(fig_name)
 
     bins = 128
@@ -150,7 +151,6 @@ def plot_histograms(data, histograms_gmm, distance, power, spacing, osnr, song, 
                 plot(data, histograms_gmm, distance, power, spacing, osnr, song, orth)
     else:
         raise ValueError
-
 
 
 def plot_menu(data):
