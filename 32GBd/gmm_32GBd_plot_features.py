@@ -76,6 +76,7 @@ def plot_histograms(data, histograms_gmm,
                     distance=None, power=None, spacing=None,
                     osnr=None, song=None, orth=None):
     def plot(data, histograms_gmm, distance, power, spacing, osnr, song, orth):
+        print(f"Plotting for constellation at {distance} with {power} launch power, {spacing} spectral spacing, {osnr} OSNR, Song {song[-1]}, {orth} component. ")
         # Extract data
         X_ch = data[distance][power][spacing][osnr][song][orth]
 
