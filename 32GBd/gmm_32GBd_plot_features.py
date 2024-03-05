@@ -53,7 +53,7 @@ def read_data(folder_rx):
 
 
 # Load data
-folder_rx = f"{DATABASE_DIR}/Estimation/32GBd/ICI characterization"
+folder_rx = f"{DATABASE_DIR}/Estimation/32GBd"
 
 # Read received data
 print("Reading data...")
