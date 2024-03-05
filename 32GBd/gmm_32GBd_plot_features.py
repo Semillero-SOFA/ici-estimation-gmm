@@ -135,8 +135,7 @@ def plot_histograms(data, histograms_gmm, distance, power, spacing, osnr, song, 
 
         file_spacing = spacing.replace(".", "p")
         file_osnr = osnr.replace(".", "p")
-        fig_name = f"{
-            RESULTS_DIR}/plot_features_{distance}_{power}_{spacing}_{osnr}_{song}_{orth}.svg"
+        fig_name = f"{RESULTS_DIR}/plot_features_{distance}_{power}_{file_spacing}_{file_osnr}_{song}_{orth}.svg"
         plt.savefig(fig_name)
 
     bins = 128

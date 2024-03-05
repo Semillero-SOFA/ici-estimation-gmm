@@ -122,8 +122,8 @@ def get_histograms(data):
                                     "means_init": np.array([-3, -1, 1, 3]).reshape(4, 1),
                                     "n_components": 4,
                                 }
-                                gm_q = gmm_utils.calculate_gmm(
-                                    input_data, gm_kwargs)
+                                gm_q = gmm_utils.calculate_gmm(input_data,
+                                                               gm_kwargs)
 
                                 # Save gaussians
                                 histograms_gmm[distance][power][spacing][osnr][song][orth].append([
