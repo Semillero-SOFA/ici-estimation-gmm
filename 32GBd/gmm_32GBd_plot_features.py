@@ -72,7 +72,9 @@ models_tuple = (
 )
 
 
-def plot_histograms(data, histograms_gmm, distance, power, spacing, osnr, song, orth):
+def plot_histograms(data, histograms_gmm,
+                    distance=None, power=None, spacing=None,
+                    osnr=None, song=None, orth=None):
     def plot(data, histograms_gmm, distance, power, spacing, osnr, song, orth):
         # Extract data
         X_ch = data[distance][power][spacing][osnr][song][orth]
@@ -144,12 +146,14 @@ def plot_histograms(data, histograms_gmm, distance, power, spacing, osnr, song, 
     if spacing is not None and osnr is not None:
         plot(data, histograms_gmm, distance, power, spacing, osnr, song, orth)
 
-    elif spacing is None and osnr is None:
-        for spacing in data.keys():
-            for osnr in data[spacing]:
-                plot(data, histograms_gmm, distance, power, spacing, osnr, song, orth)
     else:
-        raise ValueError
+        for distance in data.keys():
+            for power in data[distance].keys():
+                for spacing in data[distance][power].keys():
+                    for osnr in data[distance][power][spacing].keys():
+                        for song in data[distance][power][spacing][osnr].keys():
+                            for orth in data[distance][power][spacing][osnr][song].keys():
+                                plot(data, histograms_gmm, distance, power, spacing, osnr, song, orth)
 
 
 def plot_menu(data):
