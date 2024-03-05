@@ -114,35 +114,35 @@ def estimation_crossvalidation(
 
         # Dataframe for better visualization
         train_data_train = pl.DataFrame(
-            {"ICI": [y_train], "Predicted ICI": [predictions_train]}
+            {"ICI": y_train, "Predicted ICI": predictions_train}
         )
         train_data_test = pl.DataFrame(
-            {"ICI": [y_test], "Predicted ICI": [predictions_test]}
+            {"ICI": y_test, "Predicted ICI": predictions_test}
         )
 
         # MAE
         mae_score_train = mean_absolute_error(
-            *train_data_train["ICI"], *train_data_train["Predicted ICI"]
+            train_data_train["ICI"], train_data_train["Predicted ICI"]
         )
         mae_score_test = mean_absolute_error(
-            *train_data_test["ICI"], *train_data_test["Predicted ICI"]
+            train_data_test["ICI"], train_data_test["Predicted ICI"]
         )
 
         # R²
         r2_score_train = r2_score(
-            *train_data_train["ICI"], *train_data_train["Predicted ICI"]
+            train_data_train["ICI"], train_data_train["Predicted ICI"]
         )
         r2_score_test = r2_score(
-            *train_data_test["ICI"], *train_data_test["Predicted ICI"]
+            train_data_test["ICI"], train_data_test["Predicted ICI"]
         )
 
         # RMSE
         rmse_score_train = mean_squared_error(
-            *train_data_train["ICI"], *train_data_train["Predicted ICI"],
+            train_data_train["ICI"], train_data_train["Predicted ICI"],
             squared=False
         )
         rmse_score_test = mean_squared_error(
-            *train_data_test["ICI"], *train_data_test["Predicted ICI"],
+            train_data_test["ICI"], train_data_test["Predicted ICI"],
             squared=False
         )
 
