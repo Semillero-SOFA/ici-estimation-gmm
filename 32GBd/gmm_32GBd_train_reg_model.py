@@ -107,7 +107,7 @@ for activations in gmm_utils.HIDDEN_LAYERS_LIST:
             args = {
                 "data": df_shuffled,
                 "n_splits": 5,
-                "max_neurons": int(neurons),
+                "max_neurons": 8,
                 "activations": activations,
                 "use_osnr": True if osnr == "osnr" else False,
             }

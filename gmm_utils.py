@@ -108,9 +108,9 @@ def estimation_crossvalidation(
         loss = loss.history["loss"]
 
         # Predict using train values
-        predictions_train = model.predict(X_train, verbose=0)
+        predictions_train = model.predict(X_train, verbose=0).flatten()
         # Predict using test values
-        predictions_test = model.predict(X_test_kf, verbose=0)
+        predictions_test = model.predict(X_test_kf, verbose=0).flatten()
 
         # Dataframe for better visualization
         train_data_train = pl.DataFrame(
