@@ -104,7 +104,7 @@ try:
 except:
     print("Error loading from file, creating a new dictionary")
     histograms_class_results = defaultdict(
-        defaultdict(defaultdict(defaultdict().copy).copy).copy
+        defaultdict(defaultdict(defaultdict(defaultdict().copy).copy).copy).copy
     )
 
 for activations in gmm_utils.HIDDEN_LAYERS_LIST:
