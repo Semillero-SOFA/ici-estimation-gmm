@@ -454,7 +454,9 @@ def plot_results(
     if intx:
         plt.xticks(x_values)
     plt.grid(True)
-    plt.savefig(path)
+    plt.show()
+    #plt.savefig(path)
+    plt.close()
 
 
 def plot_cm(scores, interval_lst):
@@ -517,6 +519,8 @@ def get_avg_class_score(results, target_value, target="neurons",
                         )
                     )
     return score_list
+
+
 def get_better_reg_models(results, metric="mae", score="test"):
     scores = []
     for activations in HIDDEN_LAYERS_LIST:
