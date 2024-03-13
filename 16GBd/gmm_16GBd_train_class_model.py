@@ -129,7 +129,7 @@ for activations in gmm_utils.HIDDEN_LAYERS_LIST:
                     ]
 
                     # Save serialized model for serialization
-                    histograms_class_results[act_fn_name][neurons][osnr] = results
+                    histograms_class_results[act_fn_name][neurons][osnr][n] = results
 
                     # Save results with serialized model
                     print("Saving results...")
