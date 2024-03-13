@@ -361,7 +361,7 @@ def test_classification_model(
         {"units": max_neurons // (2**i), "activation": activation}
         for i, activation in enumerate(activations)
     ]
-    print(f"{layer_props}{' + OSNR' if use_osnr else ''}")
+    print(f"{layer_props} {classes_n} classes {' + OSNR' if use_osnr else ''}")
     callbacks = [
         EarlyStopping(
             monitor="loss", patience=30, mode="min", restore_best_weights=True
