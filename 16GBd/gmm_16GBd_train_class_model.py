@@ -120,7 +120,7 @@ for activations in gmm_utils.HIDDEN_LAYERS_LIST:
                     "use_osnr": True if osnr == "osnr" else False,
                 }
                 act_fn_name = "".join([s[0] for s in activations])
-                if histograms_class_results[act_fn_name][neurons][osnr] == defaultdict():
+                if histograms_class_results[act_fn_name][neurons][osnr][n] == defaultdict():
                     # Get results
                     results = gmm_utils.test_classification_model(**args)
                     # Serialize model
