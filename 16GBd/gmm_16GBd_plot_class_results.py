@@ -43,8 +43,9 @@ sofa.save_json(gmm_neurons_avg_results,
 gmm_utils.plot_results(gmm_utils.MAX_NEURONS_LIST,
                        gmm_neurons_avg_results,
                        neurons_svg_filename,
-                       "Maximum number of neurons", log=True)
-
+                       "Maximum number of neurons",
+                       "Accuracy",
+                       log=True)
 # Layers
 gmm_layers_avg_results = [
     np.mean(
@@ -65,7 +66,9 @@ sofa.save_json(gmm_layers_avg_results,
 gmm_utils.plot_results(gmm_utils.LAYERS_NUMBER_LIST,
                        gmm_layers_avg_results,
                        layers_svg_filename,
-                       "Number of layers", log=False, intx=True)
+                       "Number of layers",
+                       "Accuracy",
+                       log=False, intx=True)
 
 # Classes
 gmm_classes_avg_results = [
@@ -87,7 +90,9 @@ sofa.save_json(gmm_classes_avg_results,
 gmm_utils.plot_results(gmm_utils.LAYERS_NUMBER_LIST,
                        gmm_classes_avg_results,
                        classes_svg_filename,
-                       "Number of classes", log=False, intx=True)
+                       "Number of classes",
+                       "Accuracy",
+                       log=False, intx=True)
 
 # OSNR
 gmm_osnr_avg_results = [
