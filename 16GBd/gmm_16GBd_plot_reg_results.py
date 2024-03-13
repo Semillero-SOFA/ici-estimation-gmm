@@ -45,7 +45,7 @@ gmm_utils.plot_results(gmm_utils.MAX_NEURONS_LIST,
                        neurons_svg_filename,
                        "Maximum number of neurons",
                        "MAE",
-                       log=True)
+                       log=True, intx=True)
 
 # Layers
 gmm_layers_avg_results = [
