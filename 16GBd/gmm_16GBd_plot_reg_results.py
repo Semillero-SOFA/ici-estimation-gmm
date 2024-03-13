@@ -93,10 +93,10 @@ better_models_df = gmm_utils.get_better_reg_models(
     histograms_reg_results, metric="mae", score="test"
 )
 better_models_df.write_json(
-    f"{RESULTS_DIR}/gmm_16GBd_models_summary.json", n_backups=0)
+    f"{RESULTS_DIR}/gmm_16GBd_models_summary.json")
 better_models_df.head(25).write_json(
-    f"{RESULTS_DIR}/gmm_16GBd_better_models.json", n_backups=0)
+    f"{RESULTS_DIR}/gmm_16GBd_better_models.json")
 better_models_df.tail(25).write_json(
-    f"{RESULTS_DIR}/gmm_16GBd_worst_models.json", n_backups=0)
+    f"{RESULTS_DIR}/gmm_16GBd_worst_models.json")
 
 print("Results saved succesfully")
