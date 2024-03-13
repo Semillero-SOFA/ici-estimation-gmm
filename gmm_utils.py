@@ -469,8 +469,7 @@ def plot_cm(scores, interval_lst, path):
                                       "Positive", "Negative"])
         disp.plot(colorbar=False)
         lower_limit, upper_limit = interval
-        plt.title(f"Confusion matrix for class from {
-                  lower_limit} GHz up to {upper_limit} GHz")
+        plt.title(f"Confusion matrix for class from {lower_limit} GHz up to {upper_limit} GHz")
         plt.savefig(path)
         plt.close()
 
