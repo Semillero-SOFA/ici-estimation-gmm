@@ -454,12 +454,11 @@ def plot_results(
     if intx:
         plt.xticks(x_values)
     plt.grid(True)
-    plt.show()
-    #plt.savefig(path)
+    plt.savefig(path)
     plt.close()
 
 
-def plot_cm(scores, interval_lst):
+def plot_cm(scores, interval_lst, path):
     CM = np.array(scores.get("cm").get("test"))
     for n, interval in enumerate(interval_lst):
         result = np.zeros(CM[0][0].shape)
@@ -471,7 +470,8 @@ def plot_cm(scores, interval_lst):
         disp.plot(colorbar=False)
         lower_limit, upper_limit = interval
         plt.title(f"Confusion matrix for class from {lower_limit} GHz up to {upper_limit} GHz")
-        plt.show()
+        plt.savefig(path)
+        plt.close()
 
 
 def get_avg_reg_score(results, target_value, target="neurons",
