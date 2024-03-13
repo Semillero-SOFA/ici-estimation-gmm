@@ -87,7 +87,7 @@ classes_json_filename = Path(f"{RESULTS_DIR}/gmm_classes_avg_results.json")
 classes_svg_filename = Path(f"{RESULTS_DIR}/gmm_classes_avg_results.svg")
 sofa.save_json(gmm_classes_avg_results,
                classes_json_filename)
-gmm_utils.plot_results(gmm_utils.LAYERS_NUMBER_LIST,
+gmm_utils.plot_results(gmm_utils.N_CLASSES_LIST,
                        gmm_classes_avg_results,
                        classes_svg_filename,
                        "Number of classes",
