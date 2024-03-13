@@ -39,7 +39,7 @@ gmm_neurons_avg_results = [
 neurons_json_filename = Path(f"{RESULTS_DIR}/gmm_neurons_avg_results.json")
 neurons_svg_filename = Path(f"{RESULTS_DIR}/gmm_neurons_avg_results.svg")
 sofa.save_json(gmm_neurons_avg_results,
-               neurons_json_filename)
+               neurons_json_filename, n_backups=0)
 gmm_utils.plot_results(gmm_utils.MAX_NEURONS_LIST,
                        gmm_neurons_avg_results,
                        neurons_svg_filename,
@@ -63,7 +63,7 @@ gmm_layers_avg_results = [
 layers_json_filename = Path(f"{RESULTS_DIR}/gmm_layers_avg_results.json")
 layers_svg_filename = Path(f"{RESULTS_DIR}/gmm_layers_avg_results.svg")
 sofa.save_json(gmm_layers_avg_results,
-               layers_json_filename)
+               layers_json_filename, n_backups=0)
 gmm_utils.plot_results(gmm_utils.LAYERS_NUMBER_LIST,
                        gmm_layers_avg_results,
                        layers_svg_filename,
@@ -86,17 +86,17 @@ gmm_osnr_avg_results = [
 ]
 osnr_json_filename = Path(f"{RESULTS_DIR}/gmm_osnr_avg_results.json")
 sofa.save_json(gmm_osnr_avg_results,
-               osnr_json_filename)
+               osnr_json_filename, n_backups=0)
 
 # Sort models by score
 better_models_df = gmm_utils.get_better_reg_models(
     histograms_reg_results, metric="mae", score="test"
 )
 better_models_df.write_json(
-    f"{RESULTS_DIR}/gmm_16GBd_models_summary.json")
+    f"{RESULTS_DIR}/gmm_16GBd_models_summary.json", n_backups=0)
 better_models_df.head(25).write_json(
-    f"{RESULTS_DIR}/gmm_16GBd_better_models.json")
+    f"{RESULTS_DIR}/gmm_16GBd_better_models.json", n_backups=0)
 better_models_df.tail(25).write_json(
-    f"{RESULTS_DIR}/gmm_16GBd_worst_models.json")
+    f"{RESULTS_DIR}/gmm_16GBd_worst_models.json", n_backups=0)
 
 print("Results saved succesfully")
