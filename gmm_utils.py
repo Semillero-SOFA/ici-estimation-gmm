@@ -109,7 +109,6 @@ def estimation_crossvalidation(
 
         # Predict using train values
         predictions_train = model.predict(X_train, verbose=0).flatten()
-        # Predict using test values
         predictions_test = model.predict(X_test_kf, verbose=0).flatten()
 
         # Dataframe for better visualization
@@ -280,48 +279,48 @@ def classification_crossvalidation(
                 np.argmax(fuzzy_prediction)
                 for fuzzy_prediction in fuzzy_predictions_train
             ]
-        )
+        ).flatten()
         predictions_test = np.array(
             [
                 np.argmax(fuzzy_prediction)
                 for fuzzy_prediction in fuzzy_predictions_test
             ]
-        )
+        ).flatten()
 
         # Dataframe for better visualization
         train_data_train = pl.DataFrame(
-            {"ICI": [y_train], "Predicted ICI": [predictions_train]}
+            {"ICI": y_train, "Predicted ICI": predictions_train}
         )
         train_data_test = pl.DataFrame(
-            {"ICI": [y_test], "Predicted ICI": [predictions_test]}
+            {"ICI": y_test, "Predicted ICI": predictions_test}
         )
 
         # Accuracy
         acc_score_train = accuracy_score(
-            *train_data_train["ICI"], *train_data_train["Predicted ICI"]
+            train_data_train["ICI"], train_data_train["Predicted ICI"]
         )
         acc_score_test = accuracy_score(
-            *train_data_test["ICI"], *train_data_test["Predicted ICI"]
+            train_data_test["ICI"], train_data_test["Predicted ICI"]
         )
 
         # F1
         f1_score_train = f1_score(
-            *train_data_train["ICI"],
-            *train_data_train["Predicted ICI"],
+            train_data_train["ICI"],
+            train_data_train["Predicted ICI"],
             average="micro",
         )
         f1_score_test = f1_score(
-            *train_data_test["ICI"],
-            *train_data_test["Predicted ICI"],
+            train_data_test["ICI"],
+            train_data_test["Predicted ICI"],
             average="micro"
         )
 
         # Confusion matrix
         cm_score_train = multilabel_confusion_matrix(
-            *train_data_train["ICI"], *train_data_train["Predicted ICI"]
+            train_data_train["ICI"], train_data_train["Predicted ICI"]
         ).tolist()
         cm_score_test = multilabel_confusion_matrix(
-            *train_data_test["ICI"], *train_data_test["Predicted ICI"]
+            train_data_test["ICI"], train_data_test["Predicted ICI"]
         ).tolist()
 
         # Append to lists
