@@ -469,7 +469,8 @@ def plot_cm(scores, interval_lst, path):
                                       "Positive", "Negative"])
         disp.plot(colorbar=False)
         lower_limit, upper_limit = interval
-        plt.title(f"Confusion matrix for class from {lower_limit} GHz up to {upper_limit} GHz")
+        plt.title(f"Confusion matrix for class from {
+                  lower_limit} GHz up to {upper_limit} GHz")
         plt.savefig(path)
         plt.close()
 
@@ -532,5 +533,23 @@ def get_better_reg_models(results, metric="mae", score="test"):
                     continue
                 score_value = np.mean([*coll])
                 scores.append((score_value, [act_fn_name, neurons, osnr]))
+    scores.sort(key=lambda x: x[0])
+    return pl.dataframe.DataFrame(scores)
+
+
+def get_better_class_models(results, metric="acc", score="test"):
+    scores = []
+    for activations in HIDDEN_LAYERS_LIST:
+        for neurons in MAX_NEURONS_LIST:
+            for osnr in OSNR_LIST:
+                for n_classes in N_CLASSES_LIST:
+                    act_fn_name = "".join([s[0] for s in activations])
+                    coll = results[act_fn_name][neurons][osnr][n_classes][metric][score].values(
+                    )
+                    if isinstance(coll, defaultdict):
+                        continue
+                    score_value = np.mean([*coll])
+                    scores.append(
+                        (score_value, [act_fn_name, neurons, osnr, n_classes]))
     scores.sort(key=lambda x: x[0])
     return pl.dataframe.DataFrame(scores)
