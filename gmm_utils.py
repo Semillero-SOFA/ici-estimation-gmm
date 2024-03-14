@@ -29,7 +29,7 @@ COMBINATIONS_LIST = [
 ]
 HIDDEN_LAYERS_LIST = [
     item for sublist in COMBINATIONS_LIST for item in sublist]
-N_CLASSES_LIST = range(2, 6)
+N_CLASSES_LIST = [str(n) for n in range(2, 6)]
 
 
 def split(a, n):

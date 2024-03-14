@@ -110,7 +110,7 @@ except:
 for activations in gmm_utils.HIDDEN_LAYERS_LIST:
     for neurons in gmm_utils.MAX_NEURONS_LIST:
         for osnr in gmm_utils.OSNR_LIST:
-            for n in classes_n:
+            for n in gmm_utils.N_CLASSES_LIST:
                 args = {
                     "data": df_class_shuffled[n],
                     "classes_n": n,
