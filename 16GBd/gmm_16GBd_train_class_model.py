@@ -101,7 +101,7 @@ for classes_n, interval in INTERVAL_LIST.items():
 results_file = f"{RESULTS_DIR}/gmm16_class_results.h5"
 try:
     histograms_class_results = sofa.load_hdf5(results_file)
-except:
+except FileNotFoundError:
     print("Error loading from file, creating a new dictionary")
     histograms_class_results = defaultdict(
         defaultdict(defaultdict(defaultdict(defaultdict().copy).copy).copy).copy
