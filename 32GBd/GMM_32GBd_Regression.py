@@ -324,13 +324,6 @@ df.write_json(f"{RESULTS_DIR}/gmm32_features.json")
 # Shuffle the dataframe
 df_shuffled = df.sample(n=len(df), shuffle=True, seed=1036681523)
 
-# Extract 10% of the data to use later for "production" testing
-df_prod = df_shuffled[: int(len(df_shuffled) * 0.1)]
-
-# Use the rest of the data for normal testing
-df_new = df_shuffled[int(len(df_shuffled) * 0.1):]
-
-
 # ## Hyperparameters evaluation
 
 # The following hyperparameters are going to be combined and evaluated:
