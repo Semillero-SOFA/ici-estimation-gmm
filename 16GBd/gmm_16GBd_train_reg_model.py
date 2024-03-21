@@ -91,7 +91,7 @@ df_shuffled = df.sample(n=len(df), shuffle=True, seed=1036681523)
 results_file = f"{RESULTS_DIR}/gmm16_reg_results.h5"
 try:
     histograms_reg_results = sofa.load_hdf5(results_file)
-except:
+except FileNotFoundError:
     print("Error loading from file, creating a new dictionary")
     histograms_reg_results = defaultdict(
         defaultdict(defaultdict(defaultdict().copy).copy).copy
