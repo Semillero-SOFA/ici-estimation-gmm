@@ -514,7 +514,7 @@ def get_avg_class_score(results, target_value, target="neurons",
                     score_list.append(
                         np.mean(
                             [*results[act_fn_name][neurons]
-                                [osnr][metric][score].values()]
+                                [osnr][n_classes][metric][score].values()]
                         )
                     )
     return score_list
