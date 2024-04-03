@@ -39,13 +39,15 @@ gmm_neurons_avg_results = [
 neurons_json_filename = Path(f"{RESULTS_DIR}/gmm_neurons_avg_results.json")
 neurons_svg_filename = Path(f"{RESULTS_DIR}/gmm_neurons_avg_results.svg")
 sofa.save_json(gmm_neurons_avg_results,
-               neurons_json_filename)
-gmm_utils.plot_results(gmm_utils.MAX_NEURONS_LIST,
+               neurons_json_filename, n_backups=0)
+x = list(map(int, gmm_utils.MAX_NEURONS_LIST))
+gmm_utils.plot_results(x,
                        gmm_neurons_avg_results,
                        neurons_svg_filename,
                        "Maximum number of neurons",
                        "Accuracy",
                        log=True)
+
 # Layers
 gmm_layers_avg_results = [
     np.mean(
