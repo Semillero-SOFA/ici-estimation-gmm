@@ -118,7 +118,7 @@ better_models_df = gmm_utils.get_better_class_models(
     histograms_class_results, metric="acc", score="test"
 )
 # Invert list
-better_models_df = list(reversed(better_models_df))
+better_models_df = better_models_df.reverse()
 
 better_models_df.write_json(
     f"{RESULTS_DIR}/gmm_16GBd_models_summary.json")
