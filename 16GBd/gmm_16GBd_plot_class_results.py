@@ -120,11 +120,11 @@ better_models_df = gmm_utils.get_better_class_models(
 # Invert list
 better_models_df = better_models_df.reverse()
 
-better_models_df.write_json(
-    f"{RESULTS_DIR}/gmm_16GBd_models_summary.json")
-better_models_df.head(25).write_json(
-    f"{RESULTS_DIR}/gmm_16GBd_better_models.json")
-better_models_df.tail(25).write_json(
-    f"{RESULTS_DIR}/gmm_16GBd_worst_models.json")
+better_models_df.write_csv(
+    f"{RESULTS_DIR}/gmm_16GBd_models_summary.csv")
+better_models_df.head(25).write_csv(
+    f"{RESULTS_DIR}/gmm_16GBd_better_models.csv")
+better_models_df.tail(25).write_csv(
+    f"{RESULTS_DIR}/gmm_16GBd_worst_models.csv")
 
 print("Results saved succesfully")
