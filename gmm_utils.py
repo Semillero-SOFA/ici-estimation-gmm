@@ -457,6 +457,24 @@ def plot_results(
     plt.close()
 
 
+def plot_2d_results(
+        x_values, y_values, z_values, path, xlabel, ylabel,
+        log_flag=(False, False), int_flag=(False, False)):
+    plt.figure(figsize=(12, 8))
+    cs = plt.contourf(x_values, y_values, z_values, cmap="inferno", alpha=0.9,
+                      linestyles="dashed")
+    plt.clabel(cs, colors="#000000", inline=False)
+    if any(log_flag):
+        plt.xscale("log", base=2) if log_flag[0] else plt.yscale("log", base=2)
+    if any(int_flag):
+        plt.xticks(x_values[0]) if int_flag[0] else plt.yticks(y_values[0])
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.grid(False)
+    plt.savefig(path)
+    plt.close()
+
+
 def plot_cm(scores, interval_lst, path):
     CM = np.array(scores.get("cm").get("test"))
     for n, interval in enumerate(interval_lst):
@@ -485,6 +503,25 @@ def get_avg_reg_score(results, target_value, target="neurons",
             for osnr in OSNR_LIST:
                 if target == "osnr" and osnr != target_value:
                     continue
+                act_fn_name = "".join([s[0] for s in activations])
+                score_list.append(
+                    np.mean(
+                        [*results[act_fn_name][neurons]
+                            [osnr][metric][score].values()]
+                    )
+                )
+    return score_list
+
+
+def get_neurons_vs_layers(results, layers_target, neurons_target, metric="mae", score="test"):
+    score_list = []
+    for activations in HIDDEN_LAYERS_LIST:
+        if len(activations) != layers_target:
+            continue
+        for neurons in MAX_NEURONS_LIST:
+            if neurons != neurons_target:
+                continue
+            for osnr in OSNR_LIST:
                 act_fn_name = "".join([s[0] for s in activations])
                 score_list.append(
                     np.mean(

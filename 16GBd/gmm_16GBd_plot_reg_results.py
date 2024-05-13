@@ -73,6 +73,50 @@ gmm_utils.plot_results(x,
                        "MAE",
                        log=False, intx=True)
 
+# Neurons vs Layers (Train)
+gmm_neurons_vs_layers_train_results = [
+    np.mean(
+        gmm_utils.get_neurons_vs_layers(
+            histograms_reg_results,
+            layers,
+            neurons,
+            metric="rmse",
+            score="train"
+        )
+    )
+    for layers in gmm_utils.LAYERS_NUMBER_LIST for neurons in gmm_utils.MAX_NEURONS_LIST
+]
+neurons_vs_layers_train_svg_filename = Path(f"{RESULTS_DIR}/gmm_neurons_vs_layers_train_results.svg")
+x, y = np.meshgrid(list(map(int, gmm_utils.LAYERS_NUMBER_LIST)), list(map(int, gmm_utils.MAX_NEURONS_LIST)))
+z = np.reshape(gmm_neurons_vs_layers_train_results, (8, 3))
+gmm_utils.plot_2d_results(x, y, z,
+                          neurons_vs_layers_train_svg_filename,
+                          "Number of layers",
+                          "Maximum number of neurons",
+                          log_flag=(False, True), int_flag=(True, True))
+
+# Neurons vs Layers (test)
+gmm_neurons_vs_layers_test_results = [
+    np.mean(
+        gmm_utils.get_neurons_vs_layers(
+            histograms_reg_results,
+            layers,
+            neurons,
+            metric="rmse",
+            score="test"
+        )
+    )
+    for layers in gmm_utils.LAYERS_NUMBER_LIST for neurons in gmm_utils.MAX_NEURONS_LIST
+]
+neurons_vs_layers_test_svg_filename = Path(f"{RESULTS_DIR}/gmm_neurons_vs_layers_test_results.svg")
+x, y = np.meshgrid(list(map(int, gmm_utils.LAYERS_NUMBER_LIST)), list(map(int, gmm_utils.MAX_NEURONS_LIST)))
+z = np.reshape(gmm_neurons_vs_layers_test_results, (8, 3))
+gmm_utils.plot_2d_results(x, y, z,
+                          neurons_vs_layers_test_svg_filename,
+                          "Number of layers",
+                          "Maximum number of neurons",
+                          log_flag=(False, True), int_flag=(True, True))
+
 # OSNR
 gmm_osnr_avg_results = [
     np.mean(
