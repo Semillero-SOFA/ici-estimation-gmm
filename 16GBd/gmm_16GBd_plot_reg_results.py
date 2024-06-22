@@ -30,7 +30,7 @@ gmm_neurons_avg_results = [
             histograms_reg_results,
             neurons,
             target="neurons",
-            metric="mae",
+            metric="rmse",
             score="test",
         )
     )
@@ -45,7 +45,7 @@ gmm_utils.plot_results(x,
                        gmm_neurons_avg_results,
                        neurons_svg_filename,
                        "Maximum number of neurons",
-                       "MAE",
+                       "rmse",
                        log=True)
 
 # Layers
@@ -55,7 +55,7 @@ gmm_layers_avg_results = [
             histograms_reg_results,
             layers,
             target="layers",
-            metric="mae",
+            metric="rmse",
             score="test"
         )
     )
@@ -70,7 +70,7 @@ gmm_utils.plot_results(x,
                        gmm_layers_avg_results,
                        layers_svg_filename,
                        "Number of layers",
-                       "MAE",
+                       "rmse",
                        log=False, intx=True)
 
 # Neurons vs Layers (Train)
@@ -124,7 +124,7 @@ gmm_osnr_avg_results = [
             histograms_reg_results,
             osnr,
             target="osnr",
-            metric="mae",
+            metric="rmse",
             score="test"
         )
     )
@@ -136,7 +136,7 @@ sofa.save_json(gmm_osnr_avg_results,
 
 # Sort models by score
 better_models_df = gmm_utils.get_better_reg_models(
-    histograms_reg_results, metric="mae", score="test"
+    histograms_reg_results, metric="rmse", score="test"
 )
 better_models_df.write_json(
     f"{RESULTS_DIR}/gmm_16GBd_models_summary.json")

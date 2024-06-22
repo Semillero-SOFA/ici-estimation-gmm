@@ -373,8 +373,8 @@ def test_classification_model(
 
 
 def plot_constellation_diagram(X, ax):
-    ax.scatter(X.real, X.imag, alpha=0.5)
-    ax.set_title("Constellation diagram")
+    ax.scatter(X.real, X.imag, alpha=0.5, marker="o", s=50)
+    # ax.set_title("Constellation diagram")
     ax.set_xlabel("I")
     ax.set_ylabel("Q")
 
@@ -419,6 +419,10 @@ def plot_gmm_2d(gm, limits, ax):
         levels=np.logspace(0, 3, 25),
         cmap="seismic",
     )
+    means_I = [point[0] for point in gm.means_]
+    means_Q = [point[1] for point in gm.means_]
+    ax.scatter(means_I, means_Q, marker='+', color='red',
+               label='RX Means', s=200, linewidths=5)
 
 
 def calculate_3d_histogram(X, bins, limits):
@@ -435,7 +439,7 @@ def plot_3d_histogram(x_mesh, y_mesh, hist, ax):
         x_mesh, y_mesh, hist.T, cmap="seismic",
         rstride=1, cstride=1, edgecolor="none"
     )
-    ax.set_title("3D Histogram")
+    # ax.set_title("3D Histogram")
     ax.set_xlabel("I")
     ax.set_ylabel("Q")
 
@@ -453,16 +457,16 @@ def plot_results(
     if intx:
         plt.xticks(x_values)
     plt.grid(True)
-    plt.savefig(path)
+    plt.savefig(path, bbox_inches="tight")
     plt.close()
 
 
 def plot_2d_results(
         x_values, y_values, z_values, path, xlabel, ylabel,
         log_flag=(False, False), int_flag=(False, False)):
-    plt.figure(figsize=(12, 8))
-    cs = plt.contourf(x_values, y_values, z_values, cmap="inferno", alpha=0.9,
-                      linestyles="dashed")
+    plt.figure(figsize=(5, 6))
+    cs = plt.contourf(x_values, y_values, z_values,
+                      cmap="viridis", alpha=0.9)
     plt.clabel(cs, colors="#000000", inline=False)
     if any(log_flag):
         plt.xscale("log", base=2) if log_flag[0] else plt.yscale("log", base=2)
@@ -471,7 +475,7 @@ def plot_2d_results(
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.grid(False)
-    plt.savefig(path)
+    plt.savefig(path, bbox_inches="tight")
     plt.close()
 
 
@@ -487,7 +491,7 @@ def plot_cm(scores, interval_lst, path):
         disp.plot(colorbar=False)
         lower_limit, upper_limit = interval
         plt.title(f"Confusion matrix for class from {lower_limit} GHz up to {upper_limit} GHz")
-        plt.savefig(path)
+        plt.savefig(path, bbox_inches="tight")
         plt.close()
 
 
