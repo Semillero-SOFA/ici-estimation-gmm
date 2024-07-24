@@ -26,12 +26,13 @@ logger = sofa.setup_logger(FILENAME)
 
 # Create results directory if it doesn't exist
 RESULTS_DIR = f"{GLOBAL_RESULTS_DIR}/gmm_32GBd_classification"
+FEATURES_DIR = f"{GLOBAL_RESULTS_DIR}/gmm_32GBd_regression/features"
 Path(RESULTS_DIR).mkdir(parents=True, exist_ok=True)
 
 # Try to load histograms
 logger.info("Loading features...")
-file_models_hist = f"{RESULTS_DIR}/features/models32_hist.pkl"
-file_models_gmm = f"{RESULTS_DIR}/features/models32_gmm.pkl"
+file_models_hist = f"{FEATURES_DIR}/models32_hist.pkl"
+file_models_gmm = f"{FEATURES_DIR}/models32_gmm.pkl"
 
 models_hist = sofa.joblib_load(file_models_hist)
 models_gmm = sofa.joblib_load(file_models_gmm)
