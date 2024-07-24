@@ -21,9 +21,9 @@ from sklearn.preprocessing import StandardScaler
 from tensorflow.keras.callbacks import EarlyStopping
 
 OSNR_LIST = ["osnr", "wo_osnr"]
-MAX_NEURONS_LIST = [str(2**n) for n in range(3, 11)]
+MAX_NEURONS_LIST = [str(2**n) for n in range(8, 11)]
 FUNCTIONS_LIST = ["relu", "tanh", "sigmoid"]
-LAYERS_NUMBER_LIST = [1, 2, 3]
+LAYERS_NUMBER_LIST = [1, 2, 3, 4]
 COMBINATIONS_LIST = [
     [list(subset) for subset in product(FUNCTIONS_LIST, repeat=n)] for n in LAYERS_NUMBER_LIST
 ]
