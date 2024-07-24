@@ -2,6 +2,8 @@
 # coding: utf-8
 
 # Libraries
+import os
+
 from collections import defaultdict
 
 import numpy as np
@@ -17,14 +19,19 @@ LOCAL_ROOT = sofa.find_root()
 GLOBAL_ROOT = LOCAL_ROOT.parent
 DATABASE_DIR = f"{GLOBAL_ROOT}/databases"
 GLOBAL_RESULTS_DIR = f"{GLOBAL_ROOT}/results"
+FILENAME = os.path.basename(__file__)[:-3]
+
+# Create a logger for this script
+logger = sofa.setup_logger(FILENAME)
 
 # Create results directory if it doesn't exist
 RESULTS_DIR = f"{GLOBAL_RESULTS_DIR}/gmm_32GBd_regression"
 Path(RESULTS_DIR).mkdir(parents=True, exist_ok=True)
 
 # Try to load histograms
-file_models_hist = f"{RESULTS_DIR}/models32_hist.pkl"
-file_models_gmm = f"{RESULTS_DIR}/models32_gmm.pkl"
+logger.info("Loading features...")
+file_models_hist = f"{RESULTS_DIR}/features/models32_hist.pkl"
+file_models_gmm = f"{RESULTS_DIR}/features/models32_gmm.pkl"
 
 models_hist = sofa.joblib_load(file_models_hist)
 models_gmm = sofa.joblib_load(file_models_gmm)
@@ -40,6 +47,7 @@ models_tuple = (
 # (repeated values are included)
 # Next to last for OSNR value in dB
 # Last column for spectral spacing value in GHz
+logger.info("Preprocessing data...")
 n_features = 82
 df_dict = {f"col{n}": [] for n in range(n_features)}
 data_list = []
@@ -72,16 +80,18 @@ for distance in models_gmm.keys():
 # Convert the list of dictionaries into a DataFrame
 df = pl.DataFrame(data_list)
 
-# Print the DataFrame
-df.write_json(f"{RESULTS_DIR}/gmm32_features.json")
+# Save the DataFrame
+logger.info("Saving preprocessed data...")
+df.write_json(f"{RESULTS_DIR}/features/gmm32_features.json")
 
 # Shuffle the dataframe
+logger.info("Shuffling data...")
 df_shuffled = df.sample(n=len(df), shuffle=True, seed=1036681523)
 
 # Hyperparameters evaluation
 # The following hyperparameters are going to be combined and evaluated:
-# - Maximum number of neurons in the first layer (8, 16, 32, 64, 128, 256, 512, 1024).
-# - Number of hidden layers (1, 2, 3).
+# - Maximum number of neurons in the first layer (256, 512, 1024).
+# - Number of hidden layers (1, 2, 3, 4).
 # - Activation functions (ReLu, tanh, sigmoid).
 # - Using or not the OSNR value as an additional feature.
 #
@@ -93,10 +103,12 @@ df_shuffled = df.sample(n=len(df), shuffle=True, seed=1036681523)
 # Finally the results will store the loss history, the serialized model in JSON format in a string and MAE, RMSE and R² values for training, test and production data.
 # Training
 results_file = f"{RESULTS_DIR}/gmm32_reg_results.h5"
+logger.info("Reading results from file...")
 try:
     histograms_reg_results = sofa.load_hdf5(results_file)
+    logger.info("Results loaded successfully!")
 except FileNotFoundError:
-    print("Error loading from file, creating a new dictionary")
+    logger.error("Error loading from file, creating a new dictionary")
     histograms_reg_results = defaultdict(
         defaultdict(defaultdict(defaultdict().copy).copy).copy
     )
@@ -113,6 +125,8 @@ for activations in gmm_utils.HIDDEN_LAYERS_LIST:
             }
             act_fn_name = "".join([s[0] for s in activations])
             if histograms_reg_results[act_fn_name][neurons][osnr] == defaultdict():
+                logger.info("Starting training for model with:")
+                logger.info(args)
                 # Get results
                 results = gmm_utils.test_estimation_model(**args)
                 # Serialize model
@@ -124,7 +138,7 @@ for activations in gmm_utils.HIDDEN_LAYERS_LIST:
                 histograms_reg_results[act_fn_name][neurons][osnr] = results
 
                 # Save results with serialized model
-                print("Saving results...")
+                logger.info("Saving results...")
                 sofa.save_hdf5(histograms_reg_results, results_file)
-                print("Results saved!")
-print("Training complete")
+                logger.info("Results saved!")
+logger.info("Training complete")
