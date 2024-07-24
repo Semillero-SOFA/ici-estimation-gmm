@@ -3,7 +3,6 @@
 
 # Libraries
 import os
-import logging
 
 from collections import defaultdict
 from itertools import product
@@ -15,19 +14,18 @@ import scipy as sp
 import sofa
 import gmm_utils
 
-FILENAME = os.path.basename(__file__)[:-3]
-
-# Create a logger for this script
-logger = sofa.setup_logger(FILENAME)
-
 # Globals
 LOCAL_ROOT = sofa.find_root()
 GLOBAL_ROOT = LOCAL_ROOT.parent
 DATABASE_DIR = f"{GLOBAL_ROOT}/databases"
 GLOBAL_RESULTS_DIR = f"{GLOBAL_ROOT}/results"
+FILENAME = os.path.basename(__file__)[:-3]
+
+# Create a logger for this script
+logger = sofa.setup_logger(FILENAME)
 
 # Create results directory if it doesn't exist
-RESULTS_DIR = f"{GLOBAL_RESULTS_DIR}/gmm_32GBd_regression"
+RESULTS_DIR = f"{GLOBAL_RESULTS_DIR}/gmm_32GBd_regression/features"
 Path(RESULTS_DIR).mkdir(parents=True, exist_ok=True)
 
 
