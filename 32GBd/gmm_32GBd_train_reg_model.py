@@ -126,7 +126,10 @@ for activations in gmm_utils.HIDDEN_LAYERS_LIST:
             act_fn_name = "".join([s[0] for s in activations])
             if histograms_reg_results[act_fn_name][neurons][osnr] == defaultdict():
                 logger.info("Starting training for model with:")
-                logger.info(args)
+                logger.info(f"Neurons: {args.get('max_neurons')}")
+                logger.info(f"Activation Functions: {args.get('activations')}")
+                logger.info(f"OSNR: {'Yes' if args.get('use_osnr') else 'No'}")
+
                 # Get results
                 results = gmm_utils.test_estimation_model(**args)
                 # Serialize model
