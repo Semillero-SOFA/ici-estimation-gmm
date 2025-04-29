@@ -5,14 +5,15 @@
 import os
 
 from collections import defaultdict
+from pathlib import Path
+
+import gmm_utils
 
 import numpy as np
 import polars as pl
-from pathlib import Path
-from tensorflow.keras import utils
 
 import sofa
-import gmm_utils
+from tensorflow.keras import utils
 
 # Globals
 LOCAL_ROOT = sofa.find_root()
@@ -89,6 +90,7 @@ df.write_json(f"{RESULTS_DIR}/features/gmm32_features.json")
 # Shuffle the dataframe
 logger.info("Shuffling data...")
 df_shuffled = df.sample(n=len(df), shuffle=True, seed=1036681523)
+logger.info(msg="Available spacings are: " + df["col81"].unique())
 
 # Hyperparameters evaluation
 # The following hyperparameters are going to be combined and evaluated:
