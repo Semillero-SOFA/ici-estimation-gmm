@@ -25,7 +25,7 @@ FILENAME = os.path.basename(__file__)[:-3]
 logger = sofa.setup_logger(FILENAME)
 
 # Create results directory if it doesn't exist
-RESULTS_DIR = f"{GLOBAL_RESULTS_DIR}/gmm_32GBd_regression"
+RESULTS_DIR = f"{GLOBAL_RESULTS_DIR}/gmm_32GBd_regression_without_sc"
 Path(RESULTS_DIR).mkdir(parents=True, exist_ok=True)
 
 # Try to load histograms
@@ -71,7 +71,7 @@ for distance in models_gmm.keys():
                             osnr_value = np.array([float(osnr[:-2])])
                             spacing_value = np.array([float(spacing[:-3])])
                             # Ignore 50 GHz for regression model
-                            if spacing_value >= 45:
+                            if spacing_value >= 40:
                                 continue
                             features = np.concatenate(
                                 (means, covariances, osnr_value, spacing_value))
