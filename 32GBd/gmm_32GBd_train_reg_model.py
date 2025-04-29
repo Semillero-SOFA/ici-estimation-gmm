@@ -70,7 +70,9 @@ for distance in models_gmm.keys():
                                     covariances.append(covariance)
                             osnr_value = np.array([float(osnr[:-2])])
                             spacing_value = np.array([float(spacing[:-3])])
-
+                            # Ignore 50 GHz for regression model
+                            if spacing_value >= 45:
+                                continue
                             features = np.concatenate(
                                 (means, covariances, osnr_value, spacing_value))
                             row_dict = {f"col{n}": feature for n,
