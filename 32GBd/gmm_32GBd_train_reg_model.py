@@ -90,7 +90,7 @@ df.write_json(f"{RESULTS_DIR}/features/gmm32_features.json")
 # Shuffle the dataframe
 logger.info("Shuffling data...")
 df_shuffled = df.sample(n=len(df), shuffle=True, seed=1036681523)
-logger.info(msg="Available spacings are: " + df["col81"].unique())
+logger.info(msg="Available spacings are: " + str(df["col81"].unique().to_list()))
 
 # Hyperparameters evaluation
 # The following hyperparameters are going to be combined and evaluated:
